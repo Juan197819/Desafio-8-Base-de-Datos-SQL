@@ -1,0 +1,29 @@
+    <main class="flexCol">
+        <h2>Ingrese su producto</h2>
+        <form class="flexCol" onSubmit='return agregarProducto(this)'>
+            <div class="flexCol form">
+                <label for="title">Nombre del producto</label>
+                <input id="title" type="text" required name="title" value="{{ejemploDeProducto.title}}">
+                <label for="price">Precio</label>
+                <input id="price" type="text" required name="price" value="{{ejemploDeProducto.price}}">
+                <label for="thumbnail">Foto URL</label>
+                <input id="thumbnail" type="text" required name="thumbnail" value="{{ejemploDeProducto.thumbnail}}">
+            </div>
+            <button >Agregar Producto</button>
+        </form>
+    </main>
+<h2>Vista de productos</h2>
+<div id="lista">
+
+</div>
+        <h2>Centro de Mensajes</h2>
+        <form class="flexCol form" onSubmit='return agregarMensaje(this)'>
+                <label for="mailUsuario">Agregue su email</label>
+                <input id='usuario' type="text" required name="mailUsuario" placeholder="abcd@gmail.com">
+                <div id='conversacion'></div>
+                <label for="mensaje">Mensaje</label>
+                <div>
+                    <input id='mensaje' type="text" placeholder="Escriba aquí su mensaje" name="mensaje">
+                    <button>Enviar</button>
+                </div>
+        </form>
