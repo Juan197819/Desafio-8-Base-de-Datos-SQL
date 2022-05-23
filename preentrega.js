@@ -27,6 +27,7 @@ const adminok= (req, res,next)=>{
         res.json({error: -1, descripcion: 'ruta /api/productos metodo no valido'})
     }
 }
+
 //--------------PRODUCTOS------------------
 
 let prod = productosLista; 
