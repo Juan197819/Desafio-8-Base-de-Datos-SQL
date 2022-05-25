@@ -1,76 +1,61 @@
+import  {knexSQL, knexSQLite} from './configKnex.js'
+import {tablaProductosSQL, tablaProductosSQLite} from './schemas.js'
 
- class ContenedorKnex {
-   constructor(config, tabla){
-     this.config = config,
-     this.tabla = tabla
-   }
-   async obtenerBaseDatosInicial(){
-    try {
-        await fs.promises.writeFile(this.nombreArchivo, (JSON.stringify(base)))
-        console.log('Archivo.txt creado con exito');
-    } catch (error) {
-        console.log('Fallo metodo obtenerBaseDatosInicial' + error);
-    }
-}
-async leer(){
-    try {
-        const archivo = await fs.promises.readFile(this.nombreArchivo, 'utf-8');
-        const archivoParseado = (JSON.parse(archivo));
-        return archivoParseado
-    } catch (error) {
-        console.log('Fallo metodo leer' + error);
-    }
-}
-//     METODOS SOLICITADOS EN DESAFIO
 
-async save(dato) {
-    try {
-        const archivoParseado = await this.leer();
-        dato.id = (archivoParseado.length) + 1
-        archivoParseado.push(dato)
-        const archivoActualizado = (JSON.stringify(archivoParseado));
-        fs.promises.writeFile(this.nombreArchivo, archivoActualizado);
-        console.log(dato.id);
-    } catch (error) {
-        console.log('Fallo metodo save ' + error);
-    }  
-}
-async getById(id) {
-    try {
-        const archivoParseado = await this.leer();
-        const elementoBuscado= archivoParseado.find((e)=>e.id==id)
-        console.log(elementoBuscado||null);
-    } catch (error) {
-        console.log('Fallo metodo getById ' + error);
-    }
- }
- async getAll() {
-    try {
-        const archivoParseado = await this.leer();
-        console.log(archivoParseado);
-    } catch (error) {
-        console.log('Fallo metodo getAll ' + error);
-    }
- }
- async deleteById(id) {
-    try {
-        const archivoParseado = await this.leer();
-        const nuevoListado= archivoParseado.filter((e)=>e.id!=id)
-        const archivoActualizado = (JSON.stringify(nuevoListado));
-        fs.promises.writeFile(this.nombreArchivo, archivoActualizado);
-        console.log(nuevoListado);
-    } catch (error) {
-        console.log('Fallo metodo deleteById ' + error);
-    }
- }
- async deleteAll() {
-     try {
-       await fs.promises.writeFile(this.nombreArchivo, "[]");
-         console.log('Listado borrado');
-     } catch (error) {
-        console.log('Fallo metodo deleteAll ' + error);
 
-     }
+  
+class ContenedorKnex {
+    constructor(config, tabla){
+        this.config = config,
+        this.tabla = tabla       
     }
- }
-export default ContenedorKnex
+    crearTabla(){
+            if (this.tabla == 'Mensajes SQLITE'){
+            tablaProductosSQLite()
+        }else{
+            tablaProductosSQL()
+        }
+    }
+
+    guardar(datos) {
+
+        this.config(this.tabla).insert(datos)
+            .then(()=>{console.log(`${this.tabla} insertados`)})
+            .catch((err) => console.log(`Error al insertar ${this.tabla}:  ${err}`))
+            .finally(()=>{
+                knexSQL.destroy()
+                //console.log(`Finalizo metodo guardar ${this.tabla}`)
+            })
+    }
+
+    borrar(){
+        this.config.from(this.tabla).del()
+        .then((u)=>{console.log(`${this.tabla} Borrados`, u)})
+        .catch ((error)=>{console.log(`Error al BORRAR ${this.tabla}:  ${error}`)})
+        .finally(()=>{
+            knexSQL.destroy()
+            console.log(`Finalizo metodo BORRAR ${this.tabla}`)
+        });
+    }
+
+    leer() {
+        this.config.from(this.tabla).select('*')
+        .then((u)=>{console.log(`${this.tabla} Leidos   ,`, u)})
+        .catch ((error)=>{console.log(`Error al LEER ${this.tabla}:  `, error)})
+        .finally(()=>{
+            knexSQL.destroy()
+            console.log(`Finalizo metodo LEER ${this.tabla}`)
+        });
+        
+    }
+            // .then((result) => {
+            //     let u;
+            //     for (const row of result) {
+            //         u= u + `Usuario: ${row.mail}- Mensaje: ${row.mensaje}`
+            //         console.log(`Usuario: ${e.mail}- Mensaje: ${e.mensaje}`)
+            //     }                
+            // })
+}
+let productos = new ContenedorKnex(knexSQL,'ProductosSQL')
+let mensajes = new ContenedorKnex(knexSQLite,'Mensajes SQLITE')
+export {productos, mensajes} 

@@ -8,15 +8,17 @@ const knexSQL = knex({
     user : 'root', 
     password : '',
     database : 'desafioSQL'
-  }
+  },
+  pool:{min:0,max:30}
 });  
 
 const knexSQLite =  knex({
   client: 'sqlite3',
   connection: {
-    filename: "./baseDatos.sqlite"
+    filename: "./BD/ecommerce.sqlite"
   },
   useNullAsDefault:true
+  
 });
 
 export {knexSQL, knexSQLite}

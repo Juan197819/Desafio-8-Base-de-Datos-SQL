@@ -4,10 +4,7 @@ import random from 'random'
 import exphbs from 'express-handlebars';
 import {Server as HttpServer} from "http";
 import {Server as IOServer} from "socket.io";
-import {tablaProductosSQL,tablaMensajesSQLITE} from './BD/schemas.js'
-export {knexSQL, knexSQLite}
-from './BD/configKnex.js'
-import  ContenedorKnex from './BD/contenedor.js'
+import  {productos,mensajes} from './BD/contenedor.js'
 
 const app= express(); 
 const httpServer = new HttpServer(app)
@@ -23,7 +20,6 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true})) 
 
 //-----------------------GET-----------------------
-let productos = []
 
 app.get('/',(req, res) => {
     
@@ -31,46 +27,33 @@ app.get('/',(req, res) => {
     console.log('peticion GET');
     res.render("formulario", {ejemploDeProducto});
 })
-
+ 
 //---------------WEBSOCKETS------------------------------
-
-
-let mensajes  = [
-]     
+let mensajes1=[
+  
+] 
+let productos1=[]
 
 io.on("connection", (socket) => { 
   console.log("Usuario Conectado");
-  console.log(mensajes);
-  socket.emit("mensajes", mensajes);
+  console.log(mensajes1);
+
+  socket.emit("mensajes",mensajes1);
 
   socket.on("mensajeNuevo", (newMessage) => {
-    mensajes.push(newMessage);
-    io.sockets.emit("mensajes", mensajes);
-        try {
-          const mensajesSQLite = new ContenedorKnex(knexSQLite, tablaMensajesSQLITE)
-          mensajesSQLite.save()
-            console.log('Archivo.txt creado con exito');
-        } catch (err) {
-          throw new Error(err);        }
-        // try {
-        //     fs.writeFileSync(
-        //       "./mensajes.txt",
-        //       JSON.stringify(mensajes)
-        //     );
-        //     console.log('Archivo.txt creado con exito');
-        // } catch (err) {
-        //   throw new Error(err);        }
-    }
-
-  );
+    mensajes1.push(newMessage);
+    io.sockets.emit("mensajes", mensajes1);
+    mensajes.guardar(mensajes1)
+  });
   
- socket.emit("productos", productos); 
+  socket.emit("productos", productos1); 
+
   socket.on("productoNuevo", (newProduct) => {
-    productos.push(newProduct)
-    io.sockets.emit("productos", productos);
+    productos1.push(newProduct)
+    io.sockets.emit("productos", productos1);
+    productos.guardar(productos1)
   });  
 });    
-
 
 //---------------SERVER LISTEN------------------------------
 
